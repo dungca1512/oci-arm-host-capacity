@@ -2,40 +2,45 @@ name: Oracle Auto Create Instance
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/5 * * * *' # Chạy tự động mỗi 5 phút
 
 jobs:
-  build:
+  run-bot:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
+          extensions: openssl, mbstring
 
       - name: Install Dependencies
         run: composer install --no-dev --optimize-autoloader
 
       - name: Create Private Key File
         run: |
-          cat <<EOF > private.pem
-          ${{ secrets.OCI_PRIVATE_KEY }}
-          EOF
+          # Sử dụng printf để đảm bảo các ký tự xuống dòng trong Secret được giữ nguyên định dạng RSA
+          printf "%s" "${{ secrets.OCI_PRIVATE_KEY }}" > private.pem
           chmod 600 private.pem
 
       - name: Run Oracle Bot
         env:
+          # Các biến định danh tài khoản (Lấy từ Secrets)
           OCI_REGION: ${{ secrets.OCI_REGION }}
           OCI_USER_ID: ${{ secrets.OCI_USER_ID }}
           OCI_TENANCY_ID: ${{ secrets.OCI_TENANCY_ID }}
           OCI_KEY_FINGERPRINT: ${{ secrets.OCI_KEY_FINGERPRINT }}
+          
+          # Cấu hình máy chủ (Lấy từ Secrets)
           OCI_SUBNET_ID: ${{ secrets.OCI_SUBNET_ID }}
           OCI_IMAGE_ID: ${{ secrets.OCI_IMAGE_ID }}
           OCI_OCPUS: ${{ secrets.OCI_OCPUS }}
           OCI_MEMORY_IN_GBS: ${{ secrets.OCI_MEMORY_IN_GBS }}
           OCI_SSH_PUBLIC_KEY: ${{ secrets.OCI_SSH_PUBLIC_KEY }}
+          
+          # Tên file key vừa tạo ở bước trên (Bắt buộc phải đúng tên này)
           OCI_PRIVATE_KEY_FILENAME: private.pem
         run: php index.php
