@@ -28,19 +28,16 @@ jobs:
 
       - name: Run Oracle Bot
         env:
-          # Các biến định danh tài khoản (Lấy từ Secrets)
           OCI_REGION: ${{ secrets.OCI_REGION }}
           OCI_USER_ID: ${{ secrets.OCI_USER_ID }}
           OCI_TENANCY_ID: ${{ secrets.OCI_TENANCY_ID }}
           OCI_KEY_FINGERPRINT: ${{ secrets.OCI_KEY_FINGERPRINT }}
-          
-          # Cấu hình máy chủ (Lấy từ Secrets)
           OCI_SUBNET_ID: ${{ secrets.OCI_SUBNET_ID }}
           OCI_IMAGE_ID: ${{ secrets.OCI_IMAGE_ID }}
           OCI_OCPUS: ${{ secrets.OCI_OCPUS }}
           OCI_MEMORY_IN_GBS: ${{ secrets.OCI_MEMORY_IN_GBS }}
           OCI_SSH_PUBLIC_KEY: ${{ secrets.OCI_SSH_PUBLIC_KEY }}
-          
-          # Tên file key vừa tạo ở bước trên (Bắt buộc phải đúng tên này)
           OCI_PRIVATE_KEY_FILENAME: private.pem
+          # THÊM DÒNG NÀY VÀO:
+          OCI_SHAPE: VM.Standard.A1.Flex
         run: php index.php
