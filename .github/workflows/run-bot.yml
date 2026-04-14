@@ -21,7 +21,9 @@ jobs:
 
       - name: Create Private Key File
         run: |
-          echo "${{ secrets.OCI_KEY_FILE }}" > private.pem
+          cat <<EOF > private.pem
+          ${{ secrets.OCI_PRIVATE_KEY }}
+          EOF
           chmod 600 private.pem
 
       - name: Run Oracle Bot
