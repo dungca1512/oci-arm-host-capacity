@@ -2,7 +2,7 @@ name: Oracle Auto Create Instance
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *' # Chạy tự động mỗi 5 phút
+    - cron: '*/5 * * * *'
 
 jobs:
   run-bot:
@@ -22,22 +22,26 @@ jobs:
 
       - name: Create Private Key File
         run: |
-          # Sử dụng printf để đảm bảo các ký tự xuống dòng trong Secret được giữ nguyên định dạng RSA
           printf "%s" "${{ secrets.OCI_PRIVATE_KEY }}" > private.pem
           chmod 600 private.pem
 
       - name: Run Oracle Bot
         env:
+          # Các biến bảo mật (Bắt buộc để trong Secrets)
           OCI_REGION: ${{ secrets.OCI_REGION }}
           OCI_USER_ID: ${{ secrets.OCI_USER_ID }}
           OCI_TENANCY_ID: ${{ secrets.OCI_TENANCY_ID }}
           OCI_KEY_FINGERPRINT: ${{ secrets.OCI_KEY_FINGERPRINT }}
+          OCI_SSH_PUBLIC_KEY: ${{ secrets.OCI_SSH_PUBLIC_KEY }}
           OCI_SUBNET_ID: ${{ secrets.OCI_SUBNET_ID }}
           OCI_IMAGE_ID: ${{ secrets.OCI_IMAGE_ID }}
-          OCI_OCPUS: ${{ secrets.OCI_OCPUS }}
-          OCI_MEMORY_IN_GBS: ${{ secrets.OCI_MEMORY_IN_GBS }}
-          OCI_SSH_PUBLIC_KEY: ${{ secrets.OCI_SSH_PUBLIC_KEY }}
+
+          # CÁC BIẾN HARDCODE (Để tránh lỗi Parse Body)
           OCI_PRIVATE_KEY_FILENAME: private.pem
           OCI_SHAPE: VM.Standard.A1.Flex
-          OCI_AVAILABILITY_DOMAIN: ${{ secrets.OCI_AVAILABILITY_DOMAIN }}
+          OCI_OCPUS: "4"
+          OCI_MEMORY_IN_GBS: "24"
+          OCI_DISPLAY_NAME: "Oracle-ARM-Auto"
+          # THAY MÃ AD CỦA BẠN VÀO ĐÂY:
+          OCI_AVAILABILITY_DOMAIN: "uUKR:AP-SINGAPORE-1-AD-1"
         run: php index.php
