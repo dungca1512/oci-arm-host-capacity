@@ -39,5 +39,5 @@ jobs:
           OCI_SSH_PUBLIC_KEY: ${{ secrets.OCI_SSH_PUBLIC_KEY }}
           OCI_PRIVATE_KEY_FILENAME: private.pem
           OCI_SHAPE: VM.Standard.A1.Flex
-          OCI_AVAILABILITY_DOMAIN: UocX:AP-SINGAPORE-1-AD-2
+          OCI_AVAILABILITY_DOMAIN: ${{ secrets.OCI_AVAILABILITY_DOMAIN }}
         run: php index.php
